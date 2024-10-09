@@ -467,16 +467,18 @@ async function getFreeSubscribersWaitingForMonthlyEmail(): Promise<
     //       they have a Plus subscription. SubPlat is the source of truth, but
     //       our database is updated via a webhook and whenever the user logs
     //       in. Locally, you might want to set this via `/admin/dev/`.
-    .andWhere(
-      (builder) =>
-        void builder
-          .whereRaw(
-            `NOT (subscribers.fxa_profile_json)::jsonb \\? 'subscriptions'`,
-          )
-          .orWhereRaw(
-            `NOT (subscribers.fxa_profile_json->'subscriptions')::jsonb \\? ?`,
-            MONITOR_PREMIUM_CAPABILITY,
-          ),
+    // It looks like Knex's `.where` type definition doesn't accept Promise-returning
+    // functions, even though the code does; hence the `eslint-disable`)
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    .andWhere((builder) =>
+      builder
+        .whereRaw(
+          `NOT (subscribers.fxa_profile_json)::jsonb \\? 'subscriptions'`,
+        )
+        .orWhereRaw(
+          `NOT (subscribers.fxa_profile_json->'subscriptions')::jsonb \\? ?`,
+          MONITOR_PREMIUM_CAPABILITY,
+        ),
     );
 
   if (Array.isArray(flag.allow_list) && flag.allow_list.length > 0) {
