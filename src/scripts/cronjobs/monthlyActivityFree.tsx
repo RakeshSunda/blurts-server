@@ -21,6 +21,7 @@ import {
   getEmailPreferenceForSubscriber,
   updateEmailPreferenceForSubscriber,
 } from "../../db/tables/subscriber_email_preferences";
+import { logger } from "../../app/functions/server/logging";
 
 void run();
 
@@ -142,8 +143,8 @@ export async function getMonthlyActivityFreeUnsubscribeLink(
 
     return `${process.env.SERVER_URL}/unsubscribe-email/monthly-report-free?token=${sub.unsubscribe_token}`;
   } catch (e) {
-    console.error("generate_unsubscribe_link", {
-      exception: e as string,
+    logger.error("generate_unsubscribe_link", {
+      exception: e,
     });
     captureException(e);
     return null;
