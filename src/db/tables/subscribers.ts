@@ -487,6 +487,13 @@ async function getFreeSubscribersWaitingForMonthlyEmail(): Promise<
     // https://github.com/knex/knex/issues/1881#issuecomment-275433906
     query = query.whereIn("subscribers.primary_email", flag.allow_list);
   }
+  // One thing to note as being absent from this query: a LIMIT clause.
+  // The reason for this is that we want to filter out people who had
+  // a language other than `en-US` set when signing up, but to do so,
+  // we need to parse the `accept-language` field, which we can only
+  // do after we have the query results. Thus, if we were to limit
+  // the result of this query, we would at some point end up filtering
+  // every returned row, and then never moving on to the rows after that.
   const rows = await query;
 
   return rows;
