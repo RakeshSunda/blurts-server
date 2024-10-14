@@ -109,7 +109,7 @@ async function sendMonthlyActivityEmail(subscriber: SubscriberRow) {
       ),
     );
   } catch (e) {
-    console.error("send_monthly_activity_email_free", {
+    logger.error("send_monthly_activity_email_free", {
       exception: e,
     });
   }
